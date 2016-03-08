@@ -1,3 +1,4 @@
+#include <iostream>
 #include "board.h"
 
 /*
@@ -162,6 +163,35 @@ int Board::countWhite() {
     return taken.count() - black.count();
 }
 
+int Board::naiveScore(Side side)
+{
+    return count(side) - count(other(side));
+}
+
+/**
+ * Finds all valid moves for a given side
+ */
+std::vector<Move*> Board::getValidMoves(Side side)
+{
+    std::vector<Move*> v;
+    for (int x = 0; x < 8; x++)
+    {
+        for (int y = 0; y < 8; y++)
+        {
+            Move * move = new Move(x, y);
+            //std::cerr << "(" << move->x << "," << move->y << ")\n";
+            if (checkMove(move, side))
+            {
+                //std::cerr << "(" << move->x << "," << move->y << ")\n";
+                v.push_back(move);
+            }
+        }
+    }
+    //std::cerr << "\n\n";
+    return v;
+}
+
+
 /*
  * Sets the board state given an 8x8 char array where 'w' indicates a white
  * piece and 'b' indicates a black piece. Mainly for testing purposes.
@@ -173,7 +203,7 @@ void Board::setBoard(char data[]) {
         if (data[i] == 'b') {
             taken.set(i);
             black.set(i);
-        } if (data[i] == 'w') {
+        } else if (data[i] == 'w') {
             taken.set(i);
         }
     }

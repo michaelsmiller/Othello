@@ -28,6 +28,8 @@ public:
     int count(Side side);
     int countBlack();
     int countWhite();
+    int naiveScore(Side side);
+    vector<Move*> getValidMoves(Side side);
 
     void setBoard(char data[]);
 };
