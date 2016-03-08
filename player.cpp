@@ -17,7 +17,7 @@ Player::Player(Side side) {
 }
 
 /*
- * Destructor for the player.
+ * Destructor for the awesome player.
  */
 Player::~Player() {
 }
