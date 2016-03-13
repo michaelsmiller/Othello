@@ -1,6 +1,19 @@
 #include <iostream>
 #include "board.h"
 
+
+const int SQUARE_VALUES[64] = 
+{
+    99, -8 , 8, 6, 6, 8, -8, 99,
+    -8, -24,-4,-3,-3,-4,-24, -8,
+    8 , -4 , 7, 4, 4, 7, -4, 8, 
+    6 , -3 , 4, 0, 0, 4, -3, 6, 
+    6 , -3 , 4, 0, 0, 4, -3, 6, 
+    8 , -4 , 7, 4, 4, 7, -4, 8,
+    -8, -24,-4,-3,-3,-4,-24, -8,
+    99, -8 , 8, 6, 6, 8, -8, 99
+};
+
 /*
  * Make a standard 8x8 othello board and initialize it to the standard setup.
  */
@@ -43,7 +56,7 @@ void Board::set(Side side, int x, int y) {
 }
 
 bool Board::onBoard(int x, int y) {
-    return(0 <= x && x < 8 && 0 <= y && y < 8);
+    return (0 <= x && x < 8 && 0 <= y && y < 8);
 }
 
  
@@ -166,6 +179,26 @@ int Board::countWhite() {
 int Board::naiveScore(Side side)
 {
     return count(side) - count(other(side));
+}
+
+int Board::betterScore(Side side)
+{
+    int white_score = 0;
+    int black_score = 0;
+    for (int x = 0; x < 8; x++)
+    {
+        for (int y = 0; y < 8; y++)
+        {
+            if (get(WHITE, x, y))
+                white_score += SQUARE_VALUES[x + 8 * y];
+            else if (get(BLACK, x, y))
+                black_score += SQUARE_VALUES[x + 8 * y];
+        }
+    }
+
+    int diff = white_score - black_score;
+
+    return (side == WHITE) ? diff : -diff;
 }
 
 /**
