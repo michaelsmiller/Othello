@@ -1,4 +1,5 @@
 #include <iostream>
+#include <climits>
 #include "board.h"
 
 const int SQUARE_VALUES[64] = 

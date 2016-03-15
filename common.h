@@ -2,6 +2,7 @@
 #define __COMMON_H__
 
 #include <vector>
+#include <climits>
 
 #define other(s) (s == WHITE) ? BLACK : WHITE
 

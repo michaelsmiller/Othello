@@ -4,8 +4,8 @@
 #include <utility>
 #include <iostream>
 
-#define DEPTH 10
-#define END_GAME_CUTOFF 22
+#define DEPTH 9
+#define END_GAME_CUTOFF 18
 
 using namespace std;
 
