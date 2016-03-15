@@ -3,7 +3,12 @@
 #include <climits>
 #include <utility>
 #include <iostream>
+
+#define DEPTH 10
+#define END_GAME_CUTOFF 22
+
 using namespace std;
+
 
 int getABScore(Board * b, Side s, int depth, int alpha, int beta);
 /*
@@ -107,10 +112,6 @@ Move * Player::findBestMove(int depth)
         delete v_b;
     }
 
-    if (best_move == NULL)
-    {
-        cerr << "FUCKFUCK\n";
-    }
     return best_move;
 }
 
@@ -119,12 +120,22 @@ int getABScore(Board * b, Side s, int depth, int alpha, int beta)
 {
     if (depth == 0)
     {
-        return b->betterScore(s);
+        return b->otherScore(s);
     }
     //cerr << "a\n"; 
     vector<Move*> our_valid_moves = b->getValidMoves(s);
 
     unsigned int moves = our_valid_moves.size();
+
+    if (moves == 0)
+    {
+        Side win = b->winner();
+        if (win == s)
+            return INT_MIN;
+        else if (win == other(s))
+            return INT_MIN;
+    }
+
     for (unsigned int i = 0; i < moves; i++)
     {
         Move * move = our_valid_moves[i];
@@ -162,7 +173,8 @@ int getABScore(Board * b, Side s, int depth, int alpha, int beta)
  * The move returned must be legal; if there are no valid moves for your side,
  * return NULL.
  */
-Move *Player::doMove(Move *opponentsMove, int msLeft) {
+Move *Player::doMove(Move *opponentsMove, int msLeft) 
+{
     if (testingMinimax)
     {
         board->doMove(opponentsMove, other(side));
@@ -175,8 +187,11 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
         board->doMove(opponentsMove, other(side)); 
         // vector<Move*> valid = board->getValidMoves(side);
         // Move * m = valid[0];
-        
-        Move * m = findBestMove(6);
+        int empty_squares = board->countLeft();
+        int depth = (empty_squares > END_GAME_CUTOFF) ? 
+                    DEPTH : empty_squares;
+
+        Move * m = findBestMove(depth);
 
         board->doMove(m, side);
         return m;

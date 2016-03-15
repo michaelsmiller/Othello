@@ -1,7 +1,6 @@
 #include <iostream>
 #include "board.h"
 
-
 const int SQUARE_VALUES[64] = 
 {
     99, -8 , 8, 6, 6, 8, -8, 99,
@@ -80,6 +79,38 @@ bool Board::hasMoves(Side side) {
     }
     return false;
 }
+
+int Board::legalMoves(Side s)
+{
+    int n = 0;
+    for (int x = 0; x < 8; x++)
+    {
+        for (int y = 0; y < 8; y++)
+        {
+            Move move(x, y);
+            Move * m = &move;
+            if (checkMove(m, s))
+                n++;
+        }
+    }
+    return n;
+}
+
+int Board::numCorners(Side s)
+{
+    int n = 0;
+    if (get(s, 0, 0))
+        n++;
+    if (get(s, 7, 0))
+        n++;
+    if (get(s, 0, 7))
+        n++;
+    if (get(s, 7, 0))
+        n++;
+    return n;
+}
+
+
 
 /*
  * Returns true if a move is legal for the given side; false otherwise.
@@ -176,6 +207,65 @@ int Board::countWhite() {
     return taken.count() - black.count();
 }
 
+int Board::countLeft()
+{
+    return 64 - taken.count();
+}
+
+Side Board::winner()
+{
+    bool white_has_move = false;
+    bool black_has_move = false;
+
+    for (int x = 0; x < 8; x++)
+    {
+        for (int y = 0; y < 8; y++)
+        {
+            Move move(x, y);
+            Move * m = &move;
+            white_has_move |= checkMove(m, WHITE);
+            black_has_move |= checkMove(m, BLACK);
+        }
+    }
+
+    if (white_has_move || black_has_move)
+        return NO_SIDE;
+
+    int total = taken.count();
+    int black_count = black.count();
+    int white_count = total - black_count;
+    if (white_count == black_count)
+        return NO_SIDE;
+    else if (white_count > black_count)
+        return WHITE;
+    else return BLACK;
+
+
+    // int total_count = taken.count();
+    // if (total_count == 64)
+    // {
+    //     int black_count = black.count();
+    //     if (side == WHITE)
+    //     {
+    //         if (black_count < 32)
+    //             return INFTY;
+    //         else if (black_count == 32)
+    //             return 0;
+    //         else if (black_count > 32)
+    //             return NEG_INFTY;
+    //     }
+    //     else
+    //     {
+    //         if (black_count < 32)
+    //             return NEG_INFTY;
+    //         else if (black_count == 32)
+    //             return 0;
+    //         else if (black_count > 32)
+    //             return INFTY;
+    //     }
+    // }
+}
+
 int Board::naiveScore(Side side)
 {
     return count(side) - count(other(side));
@@ -185,6 +275,12 @@ int Board::betterScore(Side side)
 {
     int white_score = 0;
     int black_score = 0;
+
+    Side win = winner();
+    if (win != NO_SIDE)
+        return (win == side) ? INT_MAX : INT_MIN;
+
+
     for (int x = 0; x < 8; x++)
     {
         for (int y = 0; y < 8; y++)
@@ -196,9 +292,17 @@ int Board::betterScore(Side side)
         }
     }
 
-    int diff = white_score - black_score;
+    return (side == WHITE) ? white_score - black_score : 
+                            black_score - white_score;
+}
 
-    return (side == WHITE) ? diff : -diff;
+int Board::otherScore(Side side)
+{
+    Side opponent = other(side);
+    int score = count(side) - count(opponent);
+    score += 100 * (legalMoves(side) - legalMoves(opponent));
+    score += 999 * (numCorners(side) - numCorners(opponent));
+    return score;
 }
 
 /**

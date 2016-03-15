@@ -15,7 +15,7 @@ private:
     bool get(Side side, int x, int y);
     void set(Side side, int x, int y);
     bool onBoard(int x, int y);
-      
+    
 public:
     Board();
     ~Board();
@@ -28,6 +28,11 @@ public:
     int count(Side side);
     int countBlack();
     int countWhite();
+    int countLeft();
+    Side winner();
+    int legalMoves(Side s);
+    int otherScore(Side s);
+    int numCorners(Side s);
     int naiveScore(Side side);
     int betterScore(Side side);
     vector<Move*> getValidMoves(Side side);

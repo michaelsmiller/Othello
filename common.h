@@ -6,7 +6,7 @@
 #define other(s) (s == WHITE) ? BLACK : WHITE
 
 enum Side { 
-    WHITE, BLACK
+    WHITE, BLACK, NO_SIDE
 };
 
 class Move {
